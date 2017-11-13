@@ -1,5 +1,5 @@
 import {
-    login,
+    useSharedAdminLogin,
     whenOffline,
     createSavedQuestion,
     createTestStore
@@ -87,7 +87,7 @@ const initQBWithReviewsTable = initQbWithDbAndTable(1, 4)
 
 describe("QueryBuilder", () => {
     beforeAll(async () => {
-        await login()
+        useSharedAdminLogin()
     })
 
     describe("visualization settings", () => {
@@ -110,7 +110,7 @@ describe("QueryBuilder", () => {
             expect(doneButton.length).toBe(1)
 
             const fieldsToIncludeCheckboxes = settingsModal.find(CheckBox)
-            expect(fieldsToIncludeCheckboxes.length).toBe(6)
+            expect(fieldsToIncludeCheckboxes.length).toBe(7)
 
             click(fieldsToIncludeCheckboxes.filterWhere((checkbox) => checkbox.parent().find("span").text() === "Created At"))
 
