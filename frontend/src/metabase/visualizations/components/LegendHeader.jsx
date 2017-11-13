@@ -49,19 +49,18 @@ export default class LegendHeader extends Component {
 
     render() {
         const { series, hovered, onRemoveSeries, actionButtons, onHoverChange, onChangeCardAndRun, settings, description, onVisualizationClick, visualizationIsClickable } = this.props;
-        const showDots     = series.length > 1;
-        const isNarrow     = this.state.width < 150;
-        const showTitles   = !showDots || !isNarrow;
-        const colors       = settings["graph.colors"] || DEFAULT_COLORS;
-        const customTitles = settings["graph.series_labels"];
-        const titles       = (customTitles && customTitles.length === series.length) ? customTitles : series.map((thisSeries) => thisSeries.card.name);
+        const showDots = series.length > 1;
+        const isNarrow = this.state.width < 150;
+        const showTitles = !showDots || !isNarrow;
+
+        let colors = settings["graph.colors"] || DEFAULT_COLORS;
 
         return (
             <div  className={cx(styles.LegendHeader, "Card-title mx1 flex flex-no-shrink flex-row align-center")}>
                 { series.map((s, index) => [
                     <LegendItem
                         key={index}
-                        title={titles[index]}
+                        title={s.card.name}
                         description={description}
                         color={colors[index % colors.length]}
                         showDot={showDots}

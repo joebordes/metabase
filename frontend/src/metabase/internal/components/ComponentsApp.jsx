@@ -35,7 +35,7 @@ export default class ComponentsApp extends Component {
                                             <div
                                                 className="p2 bordered flex align-center flex-full"
                                             >
-                                                <div className="full">
+                                                <div>
                                                     {element}
                                                 </div>
                                             </div>

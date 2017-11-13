@@ -49,8 +49,6 @@ const mapDispatchToProps = {
 @connect(mapStateToProps, mapDispatchToProps)
 @title(({ activeSection }) => activeSection && activeSection.name)
 export default class SettingsEditorApp extends Component {
-    layout = null // the reference to AdminLayout
-
     static propTypes = {
         sections: PropTypes.array.isRequired,
         activeSection: PropTypes.object,
@@ -66,9 +64,9 @@ export default class SettingsEditorApp extends Component {
     }
 
     updateSetting = async (setting, newValue) => {
-        const { settingValues, updateSetting } = this.props;
+        const { settings, settingValues, updateSetting } = this.props;
 
-        this.layout.setSaving();
+        this.refs.layout.setSaving();
 
         const oldValue = setting.value;
 
@@ -78,10 +76,17 @@ export default class SettingsEditorApp extends Component {
             await updateSetting(setting);
 
             if (setting.onChanged) {
-                await setting.onChanged(oldValue, newValue, settingValues, this.handleChangeSetting)
+                await setting.onChanged(oldValue, newValue, settingValues, (key, value) => {
+                    let setting = _.findWhere(settings, { key });
+                    if (!setting) {
+                        throw new Error("Unknown setting " + key);
+                    }
+                    setting.value = value;
+                    return updateSetting(setting);
+                })
             }
 
-            this.layout.setSaved();
+            this.refs.layout.setSaved();
 
             const value = prepareAnalyticsValue(setting);
 
@@ -94,18 +99,9 @@ export default class SettingsEditorApp extends Component {
             );
         } catch (error) {
             let message = error && (error.message || (error.data && error.data.message));
-            this.layout.setSaveError(message);
+            this.refs.layout.setSaveError(message);
             MetabaseAnalytics.trackEvent("General Settings", setting.display_name, "error");
         }
-    }
-
-    handleChangeSetting = (key, value) => {
-        const { settings, updateSetting } = this.props;
-        const setting = _.findWhere(settings, { key });
-        if (!setting) {
-            throw new Error("Unknown setting " + key);
-        }
-        return updateSetting({ ...setting, value });
     }
 
     renderSettingsPane() {
@@ -189,8 +185,7 @@ export default class SettingsEditorApp extends Component {
                         <SettingsSetting
                             key={setting.key}
                             setting={setting}
-                            onChange={this.updateSetting.bind(this, setting)}
-                            onChangeSetting={this.handleChangeSetting}
+                            updateSetting={this.updateSetting.bind(this, setting)}
                             reloadSettings={this.props.reloadSettings}
                             autoFocus={index === 0}
                             settingValues={settingValues}
@@ -246,7 +241,7 @@ export default class SettingsEditorApp extends Component {
     render() {
         return (
             <AdminLayout
-                ref={(layout) => this.layout = layout}
+                ref="layout"
                 title="Settings"
                 sidebar={this.renderSettingsSections()}
             >

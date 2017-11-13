@@ -13,7 +13,6 @@ import {
 import { isDate, isMetric, isDimension } from "metabase/lib/schema_metadata";
 
 import ChartSettingInput from "metabase/visualizations/components/settings/ChartSettingInput.jsx";
-import ChartSettingInputGroup from "metabase/visualizations/components/settings/ChartSettingInputGroup.jsx";
 import ChartSettingInputNumeric from "metabase/visualizations/components/settings/ChartSettingInputNumeric.jsx";
 import ChartSettingRadio from "metabase/visualizations/components/settings/ChartSettingRadio.jsx";
 import ChartSettingSelect from "metabase/visualizations/components/settings/ChartSettingSelect.jsx";
@@ -25,7 +24,6 @@ import ChartSettingColorsPicker from "metabase/visualizations/components/setting
 
 const WIDGETS = {
     input: ChartSettingInput,
-    inputGroup: ChartSettingInputGroup,
     number: ChartSettingInputNumeric,
     radio: ChartSettingRadio,
     select: ChartSettingSelect,
@@ -165,7 +163,7 @@ function getSetting(settingDefs, id, vizSettings, series) {
         return;
     }
 
-    const settingDef = settingDefs[id] || {};
+    const settingDef = settingDefs[id];
     const [{ card }] = series;
     const visualization_settings = card.visualization_settings || {};
 

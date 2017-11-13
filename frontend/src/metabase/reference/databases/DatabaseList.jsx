@@ -9,6 +9,7 @@ import S from "metabase/components/List.css";
 
 import List from "metabase/components/List.jsx";
 import ListItem from "metabase/components/ListItem.jsx";
+import AdminAwareEmptyState from "metabase/components/AdminAwareEmptyState.jsx";
 
 import LoadingAndErrorWrapper from "metabase/components/LoadingAndErrorWrapper.jsx";
 
@@ -21,7 +22,15 @@ import {
 } from "../selectors";
 
 import * as metadataActions from "metabase/redux/metadata";
-import NoDatabasesEmptyState from "metabase/reference/databases/NoDatabasesEmptyState";
+
+const emptyStateData = {
+    title: "Metabase is no fun without any data",
+    adminMessage: "Your databases will appear here once you connect one",
+    message: "Databases will appear here once your admins have added some",
+    image: "app/assets/img/databases-list",
+    adminAction: "Connect a database",
+    adminLink: "/admin/databases/create"
+}
 
 const mapStateToProps = (state, props) => ({
     entities: getDatabases(state, props),
@@ -79,7 +88,7 @@ export default class DatabaseList extends Component {
                     </div>
                     :
                     <div className={S.empty}>
-                        <NoDatabasesEmptyState />
+                        <AdminAwareEmptyState {...emptyStateData}/>
                     </div>
                 }
                 </LoadingAndErrorWrapper>

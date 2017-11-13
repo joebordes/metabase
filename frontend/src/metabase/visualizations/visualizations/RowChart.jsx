@@ -2,7 +2,7 @@
 
 
 import LineAreaBarChart from "../components/LineAreaBarChart.jsx";
-import rowRenderer from "../lib/RowRenderer.js";
+import { rowRenderer } from "../lib/LineAreaBarRenderer";
 
 import {
     GRAPH_DATA_SETTINGS,

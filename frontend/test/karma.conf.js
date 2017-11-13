@@ -1,7 +1,6 @@
 var webpackConfig = require('../../webpack.config');
-console.dir(webpackConfig.module.rules, { depth: null })
-webpackConfig.module.rules.forEach(function(loader) {
-    loader.use = loader.use.filter((item) => !item.loader.includes("extract-text-webpack-plugin"));
+webpackConfig.module.loaders.forEach(function(loader) {
+    loader.loader = loader.loader.replace(/^.*extract-text-webpack-plugin[^!]+!/, "");
 });
 
 module.exports = function(config) {

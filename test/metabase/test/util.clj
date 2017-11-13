@@ -20,7 +20,6 @@
              [metric :refer [Metric]]
              [permissions-group :refer [PermissionsGroup]]
              [pulse :refer [Pulse]]
-             [pulse-card :refer [PulseCard]]
              [pulse-channel :refer [PulseChannel]]
              [revision :refer [Revision]]
              [segment :refer [Segment]]
@@ -29,7 +28,6 @@
              [user :refer [User]]]
             [metabase.test.data :as data]
             [metabase.test.data.datasets :refer [*driver*]]
-            [toucan.db :as db]
             [toucan.util.test :as test])
   (:import java.util.TimeZone
            [org.joda.time DateTime DateTimeZone]
@@ -174,10 +172,6 @@
   test/WithTempDefaults
   {:with-temp-defaults (fn [_] {:creator_id (rasta-id)
                                 :name       (random-name)})})
-
-(u/strict-extend (class PulseCard)
-  test/WithTempDefaults
-  {:with-temp-defaults (fn [_] {:position 0})})
 
 (u/strict-extend (class PulseChannel)
   test/WithTempDefaults
@@ -457,13 +451,3 @@
   "Invokes `BODY` with the JVM timezone set to `DTZ`"
   [dtz & body]
   `(call-with-jvm-tz ~dtz (fn [] ~@body)))
-
-(defmacro with-model-cleanup
-  "This will delete all rows found for each model in `MODEL-SEQ`. This calls `delete!`, so if the model has defined
-  any `pre-delete` behavior, that will be preserved."
-  [model-seq & body]
-  `(try
-     ~@body
-     (finally
-       (doseq [model# ~model-seq]
-         (db/delete! model#)))))

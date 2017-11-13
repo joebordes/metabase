@@ -37,7 +37,7 @@ var MetabaseUtils = {
     },
 
     isEmpty: function(str) {
-        return (str == null || 0 === str.length || str.match(/^\s+$/) != null);
+        return (str == null || 0 === str.length);
     },
 
     // pretty limited.  just does 0-9 for right now.

@@ -1,6 +1,6 @@
 // Converted from an old Selenium E2E test
 import {
-    useSharedAdminLogin,
+    login,
     logout,
     createTestStore,
     restorePreviousLogin,
@@ -65,7 +65,7 @@ const COUNT_GADGET = "43";
 
 describe("parameters", () => {
     beforeAll(async () =>
-        useSharedAdminLogin()
+        await login()
     );
 
     describe("questions", () => {

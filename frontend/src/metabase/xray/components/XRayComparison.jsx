@@ -12,7 +12,6 @@ import ComparisonHeader from 'metabase/xray/components/ComparisonHeader'
 
 import { getIconForField } from 'metabase/lib/schema_metadata'
 import { distanceToPhrase } from 'metabase/xray/utils'
-import { ComparisonDropdown } from "metabase/xray/components/ComparisonDropdown";
 
 // right now we rely on knowing that itemB is the only one that
 // can contain a table
@@ -27,7 +26,7 @@ const fieldLinkUrl = (itemA, itemB, fieldName) => {
 */
 
 const itemLinkUrl = (item) =>
-    `/xray/${item["type-tag"]}/${item.id}/approximate`
+    `/xray/${item.itemType}/${item.id}/approximate`
 
 const CompareInts = ({ itemA, itemAColor, itemB, itemBColor }) =>
     <div className="flex">
@@ -54,10 +53,10 @@ const CompareInts = ({ itemA, itemAColor, itemB, itemBColor }) =>
 const Contributor = ({ contributor, itemA, itemB }) =>
     <div className="full-height">
         <h3 className="mb2">
-            {contributor.field.model.display_name}
+            {contributor.field.display_name}
         </h3>
 
-        <div className="ComparisonContributor bg-white shadowed rounded bordered">
+        <div className="ComparisonContributor bg-white shadowed rounded bordered full-height">
                 <div>
                     <div className="p2 flex align-center">
                         <h4>{contributor.feature.label}</h4>
@@ -70,7 +69,7 @@ const Contributor = ({ contributor, itemA, itemB }) =>
                         </Tooltip>
                     </div>
                     <div className="py1">
-                        { contributor.feature.type.startsWith('histogram') ? (
+                        { contributor.feature.type === 'histogram' ? (
                             <CompareHistograms
                                 itemA={contributor.feature.value.a}
                                 itemB={contributor.feature.value.b}
@@ -146,7 +145,6 @@ const CompareHistograms = ({ itemA, itemAColor, itemB, itemBColor, showAxis = fa
 
 const XRayComparison = ({
     contributors,
-    comparables,
     comparison,
     comparisonFields,
     itemA,
@@ -160,37 +158,13 @@ const XRayComparison = ({
                 cost={cost}
             />
             <div className="flex">
-                <ComparisonDropdown
-                    models={[itemA, itemB]}
-                    comparables={
-                        comparables[0].filter((comparableModel) =>
-                            // filter out itemB
-                            !(comparableModel.id === itemB.id && comparableModel["type-tag"] === itemB["type-tag"])
-                        )
-                    }
-                    updatingModelAtIndex={0}
-                    triggerElement={
-                        <ItemLink
-                            item={itemA}
-                            dropdown
-                        />
-                    }
+                <ItemLink
+                    link={itemLinkUrl(itemA)}
+                    item={itemA}
                 />
-                <ComparisonDropdown
-                    models={[itemA, itemB]}
-                    comparables={
-                        comparables[1].filter((comparableModel) =>
-                            // filter out itemA
-                            !(comparableModel.id === itemA.id && comparableModel["type-tag"] === itemA["type-tag"])
-                        )
-                    }
-                    updatingModelAtIndex={1}
-                    triggerElement={
-                        <ItemLink
-                            item={itemB}
-                            dropdown
-                        />
-                    }
+                <ItemLink
+                    link={itemLinkUrl(itemB)}
+                    item={itemB}
                 />
             </div>
         </div>
@@ -233,16 +207,12 @@ const XRayComparison = ({
         <div className="bordered rounded bg-white shadowed">
 
             <div className="flex p2">
-                <Link to={itemLinkUrl(itemA)} className="no-decoration">
-                    <h4 className="mr1" style={{ color: itemA.color.text}}>
-                        {itemA.name}
-                    </h4>
-                </Link>
-                <Link to={itemLinkUrl(itemB)} className="no-decoration">
-                    <h4 style={{ color: itemB.color.text}}>
-                        {itemB.name}
-                    </h4>
-                </Link>
+                <h4 className="mr1" style={{ color: itemA.color.text}}>
+                    {itemA.name}
+                </h4>
+                <h4 style={{ color: itemB.color.text}}>
+                    {itemB.name}
+                </h4>
             </div>
 
             <table className="ComparisonTable full">

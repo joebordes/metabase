@@ -32,7 +32,7 @@
 .Form-field .Form-label {
     display: block;
     font-size: 0.85em;
-    font-weight: 700;
+    font-weight: bold;
     color: currentColor;
 }
 

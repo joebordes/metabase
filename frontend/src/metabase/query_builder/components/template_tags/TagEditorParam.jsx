@@ -116,7 +116,6 @@ export default class TagEditorParam extends Component {
                         onChange={(e) => this.setType(e.target.value)}
                         isInitiallyOpen={!tag.type}
                         placeholder="Select…"
-                        height={300}
                     >
                         <Option value="text">Text</Option>
                         <Option value="number">Number</Option>
@@ -136,8 +135,6 @@ export default class TagEditorParam extends Component {
                             searchCaseInsensitive
                             isInitiallyOpen={!tag.dimension}
                             placeholder="Select…"
-                            rowHeight={60}
-                            width={280}
                         >
                             {databaseFields && databaseFields.map(field =>
                                 <Option key={field.id} value={field.id} name={field.name}>

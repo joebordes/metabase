@@ -7,7 +7,7 @@
 import { getMetadata } from "metabase/selectors/metadata"
 import {
     createTestStore,
-    useSharedAdminLogin,
+    login,
 } from "__support__/integrated_tests";
 import {
     fetchMetrics,
@@ -19,7 +19,7 @@ const metadata = (store) => getMetadata(store.getState())
 
 describe("metadata/redux", () => {
     beforeAll(async () => {
-        useSharedAdminLogin();
+        await login();
     });
 
     describe("METRIC ACTIONS", () => {

@@ -61,7 +61,6 @@
     #"^watchdog$"
     ;; Rails / Active Record
     #"^schema_migrations$"
-    #"^ar_internal_metadata$"
     ;; PostGIS
     #"^spatial_ref_sys$"
     ;; nginx

@@ -195,7 +195,7 @@ export default class SettingsEmailForm extends Component {
                 <SettingsSetting
                     key={element.key}
                     setting={{ ...element, value }}
-                    onChange={this.handleChangeEvent.bind(this, element)}
+                    updateSetting={this.handleChangeEvent.bind(this, element)}
                     errorMessage={errorMessage}
                 />
             );

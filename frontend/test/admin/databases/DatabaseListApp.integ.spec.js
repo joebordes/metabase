@@ -1,5 +1,5 @@
 import {
-    useSharedAdminLogin,
+    login,
     createTestStore
 } from "__support__/integrated_tests";
 import {
@@ -38,7 +38,7 @@ import DatabaseSchedulingForm, { SyncOption } from "metabase/admin/databases/com
 describe('dashboard list', () => {
 
     beforeAll(async () => {
-        useSharedAdminLogin()
+        await login()
     })
 
     it('should render', async () => {

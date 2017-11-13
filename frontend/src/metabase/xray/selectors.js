@@ -4,9 +4,6 @@ import { normal } from 'metabase/lib/colors'
 export const getLoadingStatus = (state) =>
     state.xray.loading
 
-export const getIsAlreadyFetched = (state) =>
-    state.xray.fetched
-
 export const getError = (state) =>
     state.xray.error
 
@@ -16,8 +13,6 @@ export const getXray = (state) =>
 export const getFeatures = (state) =>
     state.xray.xray && state.xray.xray.features
 
-export const getComparables = (state) =>
-    state.xray.xray && state.xray.xray.comparables
 
 export const getConstituents = createSelector(
     [getXray],
@@ -33,7 +28,7 @@ export const getComparisonFields = createSelector(
             return Object.keys(comparison.constituents[0].constituents)
                 .map(key => {
                     return {
-                        ...comparison.constituents[0].constituents[key].model,
+                        ...comparison.constituents[0].constituents[key].field,
                         distance: comparison.comparison[key].distance
                     }
                 })
@@ -47,34 +42,24 @@ export const getComparisonContributors = createSelector(
         if(comparison) {
 
             const getValue = (constituent, { field, feature }) => {
-                return constituent.constituents[field][feature] &&
-                    constituent.constituents[field][feature].value
+                return constituent.constituents[field][feature].value
             }
 
-            const genContributor = ({ field, feature }) => {
-                const featureValue = {
-                    a: getValue(comparison.constituents[0], { field, feature }),
-                    b: getValue(comparison.constituents[1], { field, feature })
-                };
-
-                if (featureValue.a !== null && featureValue.b !== null) {
-                    return {
-                        field: comparison.constituents[0].constituents[field],
-                        feature: {
-                            ...comparison.constituents[0].constituents[field][feature],
-                            value: featureValue,
-                            type: feature
-                        }
-                    }
-                } else {
-                    // NOTE Atte Keinänen: This will become obsolete
-                    return null;
+            const genContributor = ({ field, feature }) => ({
+                field: comparison.constituents[0].constituents[field],
+                feature: {
+                    ...comparison.constituents[0].constituents[field][feature],
+                    value: {
+                        a: getValue(comparison.constituents[0], { field, feature }),
+                        b: getValue(comparison.constituents[1], { field, feature })
+                    },
+                    type: feature
                 }
-            }
+            })
 
             const top = comparison['top-contributors']
 
-            return top && top.map(genContributor).filter((contributor) => contributor !== null)
+            return top && top.map(genContributor)
         }
     }
 )
@@ -87,25 +72,12 @@ const getItemColor = (index) => ({
     text: index === 0 ? '#57C5DA' : normal.purple
 })
 
-const genItem = (item, index) => ({
+const genItem = (item, itemType, index) => ({
     name: item.name,
     id: item.id,
-    "type-tag": item["type-tag"],
+    itemType,
     color: getItemColor(index),
 })
-
-export const getModelItem = (state, index = 0) => createSelector(
-    [getComparison],
-    (comparison) => {
-        if(comparison) {
-            const item = comparison.constituents[index].features.model
-            return {
-                ...genItem(item, index),
-                constituents: comparison.constituents[index].constituents
-            }
-        }
-    }
-)(state)
 
 export const getSegmentItem = (state, index = 0) => createSelector(
     [getComparison],
@@ -113,7 +85,7 @@ export const getSegmentItem = (state, index = 0) => createSelector(
         if(comparison) {
             const item = comparison.constituents[index].features.segment
             return {
-                ...genItem(item, index),
+                ...genItem(item, 'segment', index),
                 constituents: comparison.constituents[index].constituents,
             }
         }
@@ -126,7 +98,7 @@ export const getTableItem = (state, index = 1) => createSelector(
         if(comparison) {
             const item = comparison.constituents[index].features.table
             return {
-                ...genItem(item, index),
+                ...genItem(item, 'table', index),
                 name: item.display_name,
                 constituents: comparison.constituents[index].constituents,
 

@@ -2,6 +2,7 @@ import { click } from "__support__/enzyme_utils";
 
 import React from 'react'
 import { shallow } from 'enzyme'
+import sinon from 'sinon'
 
 import { normal } from 'metabase/lib/colors'
 
@@ -24,14 +25,14 @@ describe('Step indicators', () => {
 
     describe('goToStep', () => {
         it('should call goToStep with the proper number when a step is clicked', () => {
-            const goToStep = jest.fn()
+            const goToStep = sinon.spy()
             const wrapper = shallow(
                 <StepIndicators steps={steps} goToStep={goToStep} currentStep={1} />
             )
 
             const targetIndicator = wrapper.find('li').first()
             click(targetIndicator);
-            expect(goToStep).toHaveBeenCalledWith(1)
+            expect(goToStep.calledWith(1)).toEqual(true)
         })
     })
 })

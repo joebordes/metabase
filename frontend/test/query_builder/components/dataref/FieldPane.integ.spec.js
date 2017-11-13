@@ -1,5 +1,5 @@
 import {
-    useSharedAdminLogin,
+    login,
     createTestStore
 } from "__support__/integrated_tests";
 import { click } from "__support__/enzyme_utils";
@@ -27,7 +27,7 @@ describe("FieldPane", () => {
     let queryBuilder = null;
 
     beforeAll(async () => {
-        useSharedAdminLogin();
+        await login();
         store = await createTestStore()
 
         store.pushPath(Urls.plainQuestion());

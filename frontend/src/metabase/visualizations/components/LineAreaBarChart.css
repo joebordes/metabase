@@ -47,9 +47,7 @@
 
 .LineAreaBarChart .dc-chart .x-axis-label,
 .LineAreaBarChart .dc-chart .y-axis-label {
-  fill: #727479;
-  font-size: 14px;
-  font-weight: 900;
+  fill: #93A1AB;
 }
 
 .LineAreaBarChart .dc-chart .tick line {

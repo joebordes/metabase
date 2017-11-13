@@ -20,7 +20,7 @@ import SettingToggle from './SettingToggle';
 
 type Props = {
     setting: any,
-    onChange: (value: any) => void,
+    updateSetting: (value: any) => void,
     mappings: { [string]: number[] },
     updateMappings: (value: { [string]: number[] }) => void
 };

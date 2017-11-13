@@ -6,11 +6,11 @@ import title from 'metabase/hoc/Title'
 import { Link } from 'react-router'
 
 import { isDate } from 'metabase/lib/schema_metadata'
-import { fetchFieldXray, initialize } from 'metabase/xray/xray'
+import { fetchXray, initialize } from 'metabase/xray/xray'
 import {
     getLoadingStatus,
     getError,
-    getFeatures, getIsAlreadyFetched
+    getFeatures
 } from 'metabase/xray/selectors'
 
 import {
@@ -26,7 +26,7 @@ import StatGroup from 'metabase/xray/components/StatGroup'
 import Histogram from 'metabase/xray/Histogram'
 import { Heading, XRayPageWrapper } from 'metabase/xray/components/XRayLayout'
 
-import { xrayLoadingMessages } from 'metabase/xray/utils'
+import { hasXray, xrayLoadingMessages } from 'metabase/xray/utils'
 
 import Periodicity from 'metabase/xray/components/Periodicity'
 import LoadingAnimation from 'metabase/xray/components/LoadingAnimation'
@@ -35,13 +35,12 @@ import type { Field } from 'metabase/meta/types/Field'
 import type { Table } from 'metabase/meta/types/Table'
 
 type Props = {
-    fetchFieldXray: () => void,
+    fetchXray: () => void,
     initialize: () => {},
     isLoading: boolean,
-    isAlreadyFetched: boolean,
-    features: {
-        model: Field,
+    xray: {
         table: Table,
+        field: Field,
         histogram: {
             value: {}
         }
@@ -54,19 +53,18 @@ type Props = {
 }
 
 const mapStateToProps = state => ({
-    features: getFeatures(state),
+    xray: getFeatures(state),
     isLoading: getLoadingStatus(state),
-    isAlreadyFetched: getIsAlreadyFetched(state),
     error: getError(state)
 })
 
 const mapDispatchToProps = {
     initialize,
-    fetchFieldXray
+    fetchXray
 }
 
 @connect(mapStateToProps, mapDispatchToProps)
-@title(({ features }) => features && features.model.display_name || "Field")
+@title(({ xray }) => xray && xray.field.display_name || "Field")
 class FieldXRay extends Component {
     props: Props
 
@@ -83,8 +81,8 @@ class FieldXRay extends Component {
     }
 
     fetch() {
-        const { params, fetchFieldXray } = this.props
-        fetchFieldXray(params.fieldId, params.cost)
+        const { params, fetchXray } = this.props
+        fetchXray('field', params.fieldId, params.cost)
     }
 
     componentDidUpdate (prevProps: Props) {
@@ -94,11 +92,11 @@ class FieldXRay extends Component {
     }
 
     render () {
-        const { features, params, isLoading, isAlreadyFetched, error } = this.props
+        const { xray, params, isLoading, error } = this.props
 
         return (
             <LoadingAndErrorWrapper
-                loading={isLoading || !isAlreadyFetched}
+                loading={isLoading || !hasXray(xray)}
                 error={error}
                 noBackground
                 loadingMessages={xrayLoadingMessages}
@@ -111,13 +109,13 @@ class FieldXRay extends Component {
                                 <div className="full">
                                     <Link
                                         className="my2 px2 text-bold text-brand-hover inline-block bordered bg-white p1 h4 no-decoration rounded shadowed"
-                                        to={`/xray/table/${features.table.id}/approximate`}
+                                        to={`/xray/table/${xray.table.id}/approximate`}
                                     >
-                                        {features.table.display_name}
+                                        {xray.table.display_name}
                                     </Link>
                                     <div className="mt2 flex align-center">
                                         <h1 className="flex align-center">
-                                            {features.model.display_name}
+                                            {xray.field.display_name}
                                             <Icon name="chevronright" className="mx1 text-grey-3" size={16} />
                                             <span className="text-grey-3">X-ray</span>
                                         </h1>
@@ -125,13 +123,13 @@ class FieldXRay extends Component {
                                             <h3 className="mr2 text-grey-3">Fidelity</h3>
                                             <CostSelect
                                                 xrayType='field'
-                                                id={features.model.id}
+                                                id={xray.field.id}
                                                 currentCost={params.cost}
                                             />
                                         </div>
                                     </div>
                                     <p className="mt1 text-paragraph text-measure">
-                                        {features.model.description}
+                                        {xray.field.description}
                                     </p>
                                 </div>
                             </div>
@@ -140,32 +138,32 @@ class FieldXRay extends Component {
                                 <div className="bg-white bordered shadowed">
                                     <div className="lg-p4">
                                         <div style={{ height: 300 }}>
-                                            { features.histogram.value &&
-                                                <Histogram histogram={features.histogram.value} />
+                                            { xray.histogram.value &&
+                                                <Histogram histogram={xray.histogram.value} />
                                             }
                                         </div>
                                     </div>
                                 </div>
                             </div>
 
-                            { isDate(features.model) && <Periodicity xray={features} /> }
+                            { isDate(xray.field) && <Periodicity xray={xray} /> }
 
                             <StatGroup
                                 heading="Values overview"
-                                xray={features}
+                                xray={xray}
                                 stats={VALUES_OVERVIEW}
                             />
 
                             <StatGroup
                                 heading="Statistical overview"
-                                xray={features}
+                                xray={xray}
                                 showDescriptions
                                 stats={STATS_OVERVIEW}
                             />
 
                             <StatGroup
                                 heading="Robots"
-                                xray={features}
+                                xray={xray}
                                 showDescriptions
                                 stats={ROBOTS}
                             />

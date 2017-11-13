@@ -1,5 +1,5 @@
 import {
-    useSharedAdminLogin,
+    login,
     createTestStore
 } from "__support__/integrated_tests";
 import { click } from "__support__/enzyme_utils"
@@ -15,7 +15,7 @@ import { INITIALIZE_SETTINGS } from "metabase/admin/settings/settings"
 
 describe('Admin Auth Options', () => {
     beforeAll(async () => {
-        useSharedAdminLogin()
+        await login()
     })
 
     it('it should render the proper configuration form', async () => {

@@ -3,16 +3,10 @@
   (:require [expectations :refer :all]
             [metabase
              [http-client :as http]
-             [middleware :as middleware]
-             [util :as u]]
+             [middleware :as middleware]]
             [metabase.models
              [card :refer [Card]]
-             [database :refer [Database]]
-             [permissions :as perms]
-             [permissions-group :as perms-group]
-             [pulse :as pulse :refer [Pulse]]
-             [pulse-card :refer [PulseCard]]
-             [table :refer [Table]]]
+             [pulse :as pulse :refer [Pulse]]]
             [metabase.test.data.users :refer :all]
             [metabase.test.util :as tu]
             [toucan.db :as db]
@@ -28,8 +22,7 @@
       (update :display name)))
 
 (defn- pulse-channel-details [channel]
-  (select-keys channel [:schedule_type :schedule_details :channel_type :updated_at :details :pulse_id :id :enabled
-                        :created_at]))
+  (select-keys channel [:schedule_type :schedule_details :channel_type :updated_at :details :pulse_id :id :enabled :created_at]))
 
 (defn- pulse-details [pulse]
   (tu/match-$ pulse
@@ -167,17 +160,16 @@
                     :details       {:channels "#general"}
                     :recipients    []}]
    :skip_if_empty false}
-  (-> (pulse-response ((user->client :rasta) :put 200 (format "pulse/%d" (:id pulse))
-                       {:name          "Updated Pulse"
-                        :cards         [{:id (:id card)}]
-                        :channels      [{:enabled       true
-                                         :channel_type  "slack"
-                                         :schedule_type "hourly"
-                                         :schedule_hour 12
-                                         :schedule_day  "mon"
-                                         :recipients    []
-                                         :details       {:channels "#general"}}]
-                        :skip_if_empty false}))
+  (-> (pulse-response ((user->client :rasta) :put 200 (format "pulse/%d" (:id pulse)) {:name          "Updated Pulse"
+                                                                                       :cards         [{:id (:id card)}]
+                                                                                       :channels      [{:enabled       true
+                                                                                                        :channel_type  "slack"
+                                                                                                        :schedule_type "hourly"
+                                                                                                        :schedule_hour 12
+                                                                                                        :schedule_day  "mon"
+                                                                                                        :recipients    []
+                                                                                                        :details       {:channels "#general"}}]
+                                                                                       :skip_if_empty false}))
       (update :channels remove-extra-channels-fields)))
 
 
@@ -188,34 +180,15 @@
     ((user->client :rasta) :delete 204 (format "pulse/%d" (:id pulse)))
     (pulse/retrieve-pulse (:id pulse))))
 
-;; Check that a rando isn't allowed to delete a pulse
-(expect
-  "You don't have permissions to do that."
-  (tt/with-temp* [Database  [{database-id :id}]
-                  Table     [{table-id :id}    {:db_id database-id}]
-                  Card      [card              {:dataset_query {:database database-id
-                                                               :type     "query"
-                                                               :query    {:source-table table-id,
-                                                                          :aggregation  {:aggregation-type "count"}}}}]
-                  Pulse     [pulse             {:name "Daily Sad Toucans"}]
-                  PulseCard [pulse-card        {:pulse_id (u/get-id pulse), :card_id (u/get-id card)}]]
-    ;; revoke permissions for default group to this database
-    (perms/delete-related-permissions! (perms-group/all-users) (perms/object-path database-id))
-    ;; now a user without permissions to the Card in question should *not* be allowed to delete the pulse
-    ((user->client :rasta) :delete 403 (format "pulse/%d" (u/get-id pulse)))))
-
-
 
 ;; ## GET /api/pulse -- should come back in alphabetical order
 (tt/expect-with-temp [Pulse [pulse1 {:name "ABCDEF"}]
                       Pulse [pulse2 {:name "GHIJKL"}]]
   [(assoc (pulse-details pulse1) :read_only false)
    (assoc (pulse-details pulse2) :read_only false)]
-  (do
-    ;; delete anything else in DB just to be sure; this step may not be neccesary any more
-    (db/delete! Pulse :id [:not-in #{(:id pulse1)
-                                     (:id pulse2)}])
-    ((user->client :rasta) :get 200 "pulse")))
+  (do (db/delete! Pulse :id [:not-in #{(:id pulse1)
+                                               (:id pulse2)}]) ; delete anything else in DB just to be sure; this step may not be neccesary any more
+      ((user->client :rasta) :get 200 "pulse")))
 
 
 ;; ## GET /api/pulse/:id

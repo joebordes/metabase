@@ -1,6 +1,6 @@
 import {
     createTestStore,
-    useSharedAdminLogin
+    login
 } from "__support__/integrated_tests";
 import {
     click, clickButton,
@@ -76,7 +76,7 @@ PublicApi.dashboard = async () => {
 
 describe("Dashboard", () => {
     beforeAll(async () => {
-        useSharedAdminLogin();
+        await login();
     })
 
     describe("redux actions", () => {

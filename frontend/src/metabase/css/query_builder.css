@@ -31,7 +31,6 @@
     border-right: none;
 }
 
-/*
 .Icon-download,
 .Icon-addToDash {
     fill: #919191;
@@ -43,7 +42,6 @@
     fill: var(--brand-color);
     transition: fill .3s linear;
 }
-*/
 
 /* a section of the graphical query itself */
 .Query-section {
@@ -89,7 +87,7 @@
 }
 
 .Query-filter.selected {
-    border-color: var(--purple-color);
+    border-color: var(--purple-light-color);
 }
 
 .Filter-section {

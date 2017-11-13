@@ -2,9 +2,6 @@
 import React, { Component } from "react";
 import PropTypes from "prop-types";
 
-import { List } from 'react-virtualized'
-import "react-virtualized/styles.css";
-
 import ColumnarSelector from "metabase/components/ColumnarSelector.jsx";
 import Icon from "metabase/components/Icon.jsx";
 import PopoverWithTrigger from "metabase/components/PopoverWithTrigger.jsx";
@@ -26,34 +23,24 @@ export default class Select extends Component {
 }
 
 class BrowserSelect extends Component {
-
-    state = {
-        inputValue: ""
+    constructor(props, context) {
+        super(props, context);
+        this.state = {
+            inputValue: ""
+        };
     }
-
     static propTypes = {
         children: PropTypes.array.isRequired,
-        onChange: PropTypes.func.isRequired,
+        className: PropTypes.string,
         value: PropTypes.any,
+        onChange: PropTypes.func.isRequired,
         searchProp: PropTypes.string,
         searchCaseInsensitive: PropTypes.bool,
         isInitiallyOpen: PropTypes.bool,
-        placeholder: PropTypes.string,
-        // NOTE - @kdoh
-        // seems too generic for us?
-        triggerElement: PropTypes.any,
-        height: PropTypes.number,
-        width: PropTypes.number,
-        rowHeight: PropTypes.number,
-        // TODO - @kdoh
-        // we should not allow this
-        className: PropTypes.string,
+        placeholder: PropTypes.string
     }
     static defaultProps = {
         className: "",
-        width: 320,
-        height: 320,
-        rowHeight: 40,
     }
 
     isSelected(otherValue) {
@@ -62,21 +49,7 @@ class BrowserSelect extends Component {
     }
 
     render() {
-        const {
-            className,
-            value,
-            onChange,
-            searchProp,
-            searchCaseInsensitive,
-            isInitiallyOpen,
-            placeholder,
-            triggerElement,
-            width,
-            height,
-            rowHeight
-        } = this.props;
-
-        let children = this.props.children
+        const { className, children, value, onChange, searchProp, searchCaseInsensitive, isInitiallyOpen, placeholder } = this.props;
 
         let selectedName;
         for (const child of children) {
@@ -103,14 +76,11 @@ class BrowserSelect extends Component {
             }
         }
 
-        // make sure we filter by the search query
-        children = children.filter(filter)
-
         return (
             <PopoverWithTrigger
                 ref="popover"
                 className={className}
-                triggerElement={triggerElement || <SelectButton hasValue={!!value}>{selectedName}</SelectButton>}
+                triggerElement={<SelectButton hasValue={!!value}>{selectedName}</SelectButton>}
                 triggerClasses={className}
                 verticalAttachments={["top"]}
                 isInitiallyOpen={isInitiallyOpen}
@@ -124,34 +94,19 @@ class BrowserSelect extends Component {
                             autoFocus
                         />
                     }
-                    <List
-                        width={width}
-                        height={height}
-                        rowHeight={rowHeight}
-                        rowCount={children.length}
-                        rowRenderer={({index, key, style}) => {
-                            const child = children[index]
-
-                            /*
-                             * for each child we need to add props based on
-                             * the parent's onClick and the current selection
-                             * status, so we use cloneElement here
-                            * */
-                            return (
-                                <div key={key} style={style} onClick={e => e.stopPropagation()}>
-                                    {React.cloneElement(children[index], {
-                                        selected: this.isSelected(child.props.value),
-                                        onClick: () => {
-                                            if (!child.props.disabled) {
-                                                onChange({ target: { value: child.props.value }});
-                                            }
-                                            this.refs.popover.close()
-                                        }
-                                    })}
-                                </div>
-                            )
-                        }}
-                    />
+                    <div className="ColumnarSelector-column scroll-y" onClick={(e) => e.stopPropagation()}>
+                        {children.filter(filter).map(child =>
+                            React.cloneElement(child, {
+                                selected: this.isSelected(child.props.value),
+                                onClick: () => {
+                                    if (!child.props.disabled) {
+                                        onChange({ target: { value: child.props.value }});
+                                    }
+                                    this.refs.popover.close()
+                                }
+                            })
+                        )}
+                    </div>
                 </div>
             </PopoverWithTrigger>
         );
@@ -202,7 +157,7 @@ export class Option extends Component {
                         }}
                     />
                 }
-                <span className="ml4 no-decoration">{children}</span>
+                <span className="ml4">{children}</span>
             </div>
         );
     }

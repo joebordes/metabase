@@ -2,83 +2,48 @@ import React, { Component } from 'react'
 import { connect } from 'react-redux'
 import _ from 'underscore'
 
-import {
-    fetchSharedTypeComparisonXray,
-    fetchTwoTypesComparisonXray,
-    initialize
-} from 'metabase/xray/xray'
+import title from 'metabase/hoc/Title'
+
+import { fetchSegmentComparison, initialize } from 'metabase/xray/xray'
 import {
     getComparison,
     getComparisonFields,
     getComparisonContributors,
-    getModelItem,
+    getSegmentItem,
+    getTitle,
     getLoadingStatus,
-    getError,
-    getTitle
+    getError
 } from 'metabase/xray/selectors'
 
-import title from 'metabase/hoc/Title'
 import LoadingAndErrorWrapper from 'metabase/components/LoadingAndErrorWrapper'
 import XRayComparison from 'metabase/xray/components/XRayComparison'
 import LoadingAnimation from 'metabase/xray/components/LoadingAnimation'
 
 import { hasComparison, comparisonLoadingMessages } from 'metabase/xray/utils'
 
-@connect(null, { fetchSharedTypeComparisonXray })
-export class SharedTypeComparisonXRay extends Component {
-    render() {
-        const { modelTypePlural, modelId1, modelId2, cost } = this.props.params;
-
-        return (
-            <TableLikeComparisonXRay
-                fetchTableLikeComparisonXray={
-                    () => this.props.fetchSharedTypeComparisonXray(modelTypePlural, modelId1, modelId2, cost)
-                }
-            />
-        )
-    }
-}
-
-@connect(null, { fetchTwoTypesComparisonXray })
-export class TwoTypesComparisonXRay extends Component {
-    render() {
-        const { modelType1, modelId1, modelType2, modelId2, cost } = this.props.params;
-
-        return (
-            <TableLikeComparisonXRay
-                fetchTableLikeComparisonXray={
-                    () => this.props.fetchTwoTypesComparisonXray(modelType1, modelId1, modelType2, modelId2, cost)
-                }
-            />
-        )
-    }
-}
-
 const mapStateToProps = (state) => ({
     comparison:     getComparison(state),
     fields:         getComparisonFields(state),
     contributors:   getComparisonContributors(state),
-    itemA:          getModelItem(state, 0),
-    itemB:          getModelItem(state, 1),
+    itemA:          getSegmentItem(state, 0),
+    itemB:          getSegmentItem(state, 1),
     isLoading:      getLoadingStatus(state),
     error:          getError(state)
 })
 
 const mapDispatchToProps = {
-    initialize
+    initialize,
+    fetchSegmentComparison
 }
 
 @connect(mapStateToProps, mapDispatchToProps)
 @title(props => getTitle(props))
-export class TableLikeComparisonXRay extends Component {
-    props: {
-        initialize: () => void,
-        fetchTableLikeComparisonXray: () => void
-    }
+class SegmentComparison extends Component {
 
     componentWillMount () {
+        const { cost, segmentId1, segmentId2 } = this.props.params
         this.props.initialize()
-        this.props.fetchTableLikeComparisonXray()
+        this.props.fetchSegmentComparison(segmentId1, segmentId2, cost)
     }
 
     componentWillUnmount() {
@@ -97,7 +62,7 @@ export class TableLikeComparisonXRay extends Component {
             isLoading,
             itemA,
             itemB,
-            cost
+            params,
         } = this.props
 
         return (
@@ -111,7 +76,7 @@ export class TableLikeComparisonXRay extends Component {
                 { () =>
 
                     <XRayComparison
-                        cost={cost}
+                        cost={params.cost}
                         fields={_.sortBy(fields, 'distance').reverse()}
                         comparisonFields={[
                             'Difference',
@@ -120,7 +85,6 @@ export class TableLikeComparisonXRay extends Component {
                             'Nil%',
                         ]}
                         contributors={contributors}
-                        comparables={comparison.comparables}
                         comparison={comparison.comparison}
                         itemA={itemA}
                         itemB={itemB}
@@ -130,3 +94,5 @@ export class TableLikeComparisonXRay extends Component {
         )
     }
 }
+
+export default SegmentComparison

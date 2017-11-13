@@ -170,21 +170,17 @@ export const PublicLinksQuestionListing = () =>
     />;
 
 export const EmbeddedDashboardListing = () =>
-    <div className="bordered rounded full" style={{ maxWidth: 820 }}>
-        <PublicLinksListing
-            load={DashboardApi.listEmbeddable}
-            getUrl={({ id }) => Urls.dashboard(id)}
-            type='Embedded Dashboard Listing'
-            noLinksMessage="No dashboards have been embedded yet."
-        />
-    </div>
+    <PublicLinksListing
+        load={DashboardApi.listEmbeddable}
+        getUrl={({ id }) => Urls.dashboard(id)}
+        type='Embedded Dashboard Listing'
+        noLinksMessage="No dashboards have been embedded yet."
+    />;
 
 export const EmbeddedQuestionListing = () =>
-    <div className="bordered rounded full" style={{ maxWidth: 820 }}>
-        <PublicLinksListing
-            load={CardApi.listEmbeddable}
-            getUrl={({ id }) => Urls.question(id)}
-            type='Embedded Card Listing'
-            noLinksMessage="No questions have been embedded yet."
-        />
-    </div>
+    <PublicLinksListing
+        load={CardApi.listEmbeddable}
+        getUrl={({ id }) => Urls.question(id)}
+        type='Embedded Card Listing'
+        noLinksMessage="No questions have been embedded yet."
+    />;

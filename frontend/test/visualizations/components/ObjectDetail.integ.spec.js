@@ -1,5 +1,5 @@
 import {
-    useSharedAdminLogin,
+    login,
     createSavedQuestion,
     createTestStore
 } from "__support__/integrated_tests";
@@ -24,7 +24,7 @@ import { getMetadata } from "metabase/selectors/metadata";
 describe('ObjectDetail', () => {
 
     beforeAll(async () => {
-        useSharedAdminLogin()
+        await login()
     })
 
     describe('Increment and Decrement', () => {

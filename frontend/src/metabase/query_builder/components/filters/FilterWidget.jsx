@@ -135,7 +135,6 @@ export default class FilterWidget extends Component {
                     isInitiallyOpen={this.props.filter[1] === null}
                     onClose={this.close}
                     horizontalAttachments={["left"]}
-                    autoWidth
                 >
                     <FilterPopover
                         query={query}

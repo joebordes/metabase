@@ -12,7 +12,6 @@ import {
 } from "./components/widgets/PublicLinksListing.jsx";
 import SecretKeyWidget from "./components/widgets/SecretKeyWidget.jsx";
 import EmbeddingLegalese from "./components/widgets/EmbeddingLegalese";
-import EmbeddingLevel from "./components/widgets/EmbeddingLevel";
 import LdapGroupMappingsWidget from "./components/widgets/LdapGroupMappingsWidget";
 
 import { UtilApi } from "metabase/services";
@@ -311,21 +310,17 @@ const SECTIONS = [
                 description: null,
                 widget: EmbeddingLegalese,
                 getHidden: (settings) => settings["enable-embedding"],
-                onChanged: async (oldValue, newValue, settingsValues, onChangeSetting) => {
-                    // Generate a secret key if none already exists
+                onChanged: async (oldValue, newValue, settingsValues, onChange) => {
                     if (!oldValue && newValue && !settingsValues["embedding-secret-key"]) {
                         let result = await UtilApi.random_token();
-                        await onChangeSetting("embedding-secret-key", result.token);
+                        await onChange("embedding-secret-key", result.token);
                     }
                 }
-            }, {
+            },
+            {
                 key: "enable-embedding",
                 display_name: "Enable Embedding Metabase in other Applications",
                 type: "boolean",
-                getHidden: (settings) => !settings["enable-embedding"]
-            },
-            {
-                widget: EmbeddingLevel,
                 getHidden: (settings) => !settings["enable-embedding"]
             },
             {
@@ -395,19 +390,7 @@ const SECTIONS = [
 
             }
         ]
-    },
-    /*
-    {
-        name: "Premium Embedding",
-        settings: [
-            {
-                key: "premium-embedding-token",
-                display_name: "Premium Embedding Token",
-                widget: PremiumEmbeddingWidget
-            }
-        ]
     }
-    */
 ];
 for (const section of SECTIONS) {
     section.slug = slugify(section.name);
