@@ -97,7 +97,7 @@
      (log/warn
       (u/format-color 'red
           (str
-           (trs "WARNING: Using Metabase with an H2 application database is not recomended for production deployments.")
+           (trs "WARNING: Using Metabase with an H2 application database is not recommended for production deployments.")
            (trs "For production deployments, we highly recommend using Postgres, MySQL, or MariaDB instead.")
            (trs "If you decide to continue to use H2, please be sure to back up the database file regularly.")
            (trs "See https://metabase.com/docs/latest/operations-guide/start.html#migrating-from-using-the-h2-database-to-mysql-or-postgres for more information.")))))
