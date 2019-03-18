@@ -195,9 +195,9 @@
                              (s/validate qr/ResultsMetadata metadata))]
     (log/info
      (cond
-       valid-metadata? (trs "Card results metadata passed in to API is VALID. Thanks!")
-       metadata        (trs "Card results metadata passed in to API is INVALID. Running query to fetch correct metadata.")
-       :else           (trs "Card results metadata passed in to API is  ISSING. Running query to fetch correct metadata.")))
+       valid-metadata? (trs "Card results metadata passed into API is VALID. Thanks!")
+       metadata        (trs "Card results metadata passed into API is INVALID. Running query to fetch correct metadata.")
+       :else           (trs "Card results metadata passed into API is MISSING. Running query to fetch correct metadata.")))
     (if valid-metadata?
       (a/to-chan [metadata])
       (qp.async/result-metadata-for-query-async query))))
